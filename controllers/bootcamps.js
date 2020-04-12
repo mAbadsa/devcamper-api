@@ -16,7 +16,7 @@ getBootcamps = async (req, res, next) => {
         errors: [],
       });
   } catch (error) {
-    next(error));
+    next(error);
   }
 };
 
