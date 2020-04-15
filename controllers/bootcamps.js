@@ -7,7 +7,33 @@ const BootCamp = require("../models/Bootcamp");
 // @route       GET /api/v1/bootcamps
 // @access      public
 getBootcamps = asyncHandler(async (req, res, next) => {
-  const bootcamps = await BootCamp.find();
+
+  let query;
+
+  // Copy req.query
+  let reqQuery = { ...req.query };
+
+  // Fields to exclude
+  removeFields = ['select'];
+
+  // Loop over removeFields and delete them from reqQuery 
+  removeFields.forEach(param => delete reqQuery[param]);
+  console.log(reqQuery);
+  // Create query string
+  let queryStr = JSON.stringify(req.query);
+  
+  // Create operators ($gt, $lt, etc)
+  queryStr = queryStr.replace(
+    /\b(gt|gte|lt|lte|in)\b/g,
+    (match) => `$${match}`
+  );
+
+  // Finding resource
+  query = BootCamp.find(JSON.parse(queryStr));
+  
+  // Execution query
+  const bootcamps = await query;
+
   res.status(200).json({
     success: true,
     count: bootcamps.length,
