@@ -75,8 +75,20 @@ createCourse = asyncHandler(async (req, res, next) => {
   });
 });
 
+// @desc        update specific course
+// @route       PUT /api/v1/courses/:Id
+// @access      private
 updateCourse = asyncHandler(async (req, res, next) => {
-  const updatedCourse = await Course.findByIdAndUpdate(
+  let updatedCourse = await Course.findById(req.params.id);
+
+
+  if (!updatedCourse) {
+    return next(
+      new ErrorResponse(`Course not found with id of ${req.params.id}`)
+    );
+  }
+
+  updatedCourse = await Course.findByIdAndUpdate(
     req.params.id,
     req.body,
     {
@@ -85,12 +97,6 @@ updateCourse = asyncHandler(async (req, res, next) => {
     }
   );
 
-  if (!updatedCourse) {
-    return next(
-      new ErrorResponse(`Course not found with id of ${req.params.id}`)
-    );
-  }
-
   res.status(200).json({
     success: true,
     data: updatedCourse,
@@ -98,13 +104,18 @@ updateCourse = asyncHandler(async (req, res, next) => {
   });
 });
 
+// @desc        delete specific course
+// @route       DELETE /api/v1/courses/:id
+// @access      private
 deleteCourse = asyncHandler(async (req, res, next) => {
-  const deletedCourse = await Course.findByIdAndDelete(req.params.id);
+  const deletedCourse = await Course.findById(req.params.id);
   if (!deletedCourse) {
     return next(
       new ErrorResponse(`Course not found with id of ${req.params.id}`)
     );
   }
+
+  await deletedCourse.remove();
 
   res.status(200).json({
     success: true,
