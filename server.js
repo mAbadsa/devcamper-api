@@ -24,7 +24,7 @@ app.use(logger);
 
 // Mount Route
 app.use('/api/v1/bootcamps', bootcampRoutes);
-// app.use('/api/v1/courses', courseRoutes);
+app.use('/api/v1/courses', courseRoutes);
 
 app.use(errorHandle);
 
