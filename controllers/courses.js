@@ -2,7 +2,12 @@ const ErrorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../middleware/async");
 const geocoder = require("../utils/geocoder");
 const Course = require("../models/Course");
+const Bootcamp = require("../models/Bootcamp");
 
+// @desc        get all courses
+// @route       GET /api/v1/courses
+// @route       GET /api/v1/bootcamps/:bootcampId/courses
+// @access      public
 getCourses = asyncHandler(async (req, res, next) => {
   let query;
 
@@ -10,8 +15,8 @@ getCourses = asyncHandler(async (req, res, next) => {
     query = Course.find({ bootcamp: req.params.bootcampId });
   } else {
     query = Course.find().populate({
-      path: 'bootcamp',
-      select: 'name description'
+      path: "bootcamp",
+      select: "name description",
     });
   }
 
@@ -25,10 +30,19 @@ getCourses = asyncHandler(async (req, res, next) => {
   });
 });
 
+// @desc        get specific course by id
+// @route       GET /api/v1/courses/:id
+// @access      public
 getCourse = asyncHandler(async (req, res, next) => {
-  const course = await Course.findById(req.params.id);
+  const course = await Course.findById(req.params.id).populate({
+    path: "bootcamp",
+    select: "name description",
+  });
+
   if (!course) {
-    new ErrorResponse(`Couser notfound with id of ${req.params.id}`, 404);
+    return next(
+      new ErrorResponse(`Course not found with id of ${req.params.id}`, 404)
+    );
   }
 
   res.status(200).json({
@@ -38,8 +52,22 @@ getCourse = asyncHandler(async (req, res, next) => {
   });
 });
 
+// @desc        Add a course
+// @route       POST /api/v1/bootcamps/:bootcampId/courses
+// @access      private
 createCourse = asyncHandler(async (req, res, next) => {
+  req.body.bootcamp = req.params.bootcampId;
+
+  const bootcamp = await Bootcamp.findById(req.params.bootcampId);
+
+  if(!bootcamp) {
+    return next(
+      new ErrorResponse(`No bootcamp with the id of ${req.params.bootcampId}`, 404)
+    )
+  }
+
   const course = await Course.create(req.body);
+
   res.status(200).json({
     success: true,
     data: course,
@@ -58,7 +86,9 @@ updateCourse = asyncHandler(async (req, res, next) => {
   );
 
   if (!updatedCourse) {
-    new ErrorResponse(`Course not found with id of ${req.params.id}`);
+    return next(
+      new ErrorResponse(`Course not found with id of ${req.params.id}`)
+    );
   }
 
   res.status(200).json({
@@ -71,7 +101,9 @@ updateCourse = asyncHandler(async (req, res, next) => {
 deleteCourse = asyncHandler(async (req, res, next) => {
   const deletedCourse = await Course.findByIdAndDelete(req.params.id);
   if (!deletedCourse) {
-    new ErrorResponse(`Course not found with id of ${req.params.id}`);
+    return next(
+      new ErrorResponse(`Course not found with id of ${req.params.id}`)
+    );
   }
 
   res.status(200).json({

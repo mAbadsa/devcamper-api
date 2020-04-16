@@ -11,7 +11,7 @@ const {
 
 router.route("/").get(getCourses).post(createCourse);
 
-router.route("/:bootcampId/courses").get(getCourses);
+// router.route("/:bootcampId/courses").get(getCourses);
 
 router.route("/:id").get(getCourse).put(updateCourse).delete(deleteCourse);
 
