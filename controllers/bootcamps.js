@@ -1,3 +1,4 @@
+const path = require("path");
 const ErrorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../middleware/async");
 const geocoder = require("../utils/geocoder");
@@ -28,7 +29,7 @@ getBootcamps = asyncHandler(async (req, res, next) => {
   );
 
   // Finding resource
-  query = BootCamp.find(JSON.parse(queryStr)).populate('courses');
+  query = BootCamp.find(JSON.parse(queryStr)).populate("courses");
 
   if (req.query.select) {
     const fields = req.query.select.split(",").join(" ");
@@ -145,7 +146,7 @@ deleteBootcamps = asyncHandler(async (req, res, next) => {
   }
 
   await deletedBootcamp.remove();
-  
+
   res.status(200).json({
     success: true,
     data: deletedBootcamp,
@@ -192,6 +193,57 @@ getBootcampsInRadius = asyncHandler(async (req, res, next) => {
   });
 });
 
+// @desc        Upload Photo
+// @route       PUT /api/v1/bootcamps/:id/photo
+// @access      private
+bootcampPhotoUpload = asyncHandler(async (req, res, next) => {
+  const bootcamp = await BootCamp.findById(req.params.id);
+
+  if (!bootcamp) {
+    return next(
+      new ErrorResponse(`Bootcamp not found with id of ${req.params.id}`, 404)
+    );
+  }
+
+  if (!req.files) {
+    return next(new ErrorResponse("Please upload a file", 400));
+  }
+
+  const file = req.files.file;
+
+  // Make sure the file type is image
+  if (!file.mimetype.startsWith("image")) {
+    return next(new ErrorResponse("Please upload an image file", 400));
+  }
+
+  // Make sure the image file size less than 1000000
+  if (file.size > process.env.MAX_FILE_UPLOAD) {
+    return next(
+      new ErrorResponse(
+        `Please upload an image less than ${process.env.MAX_FILE_UPLOAD}`,
+        400
+      )
+    );
+  }
+
+  file.name = `photo_${file.md5}${path.parse(file.name).ext}`;
+
+  file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async (err) => {
+    if (err) {
+      console.log(err);
+      return next(new ErrorResponse(`Problem with file upload`, 500));
+    }
+
+    const updateBootcamp = await BootCamp.findByIdAndUpdate(req.params.id, { photo: file.name });
+
+    res.status(200).json({
+      success: true,
+      data: updateBootcamp,
+      errors: [],
+    });
+  });
+});
+
 module.exports = {
   getBootcamps,
   getBootcamp,
@@ -199,4 +251,5 @@ module.exports = {
   updateBootcamps,
   deleteBootcamps,
   getBootcampsInRadius,
+  bootcampPhotoUpload,
 };

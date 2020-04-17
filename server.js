@@ -1,6 +1,8 @@
 const express = require("express");
+const path = require('path');
 const dotenv = require("dotenv");
 const morgan = require('morgan');
+const fileUpload = require('express-fileupload');
 const colors = require('colors');
 const connectDB = require('./config/db');
 const logger = require('./middleware/logger');
@@ -21,6 +23,10 @@ const app = express();
 app.use(express.json());
 
 app.use(logger);
+
+app.use(express.static(path.join(__dirname, 'public')))
+
+app.use(fileUpload());
 
 // Mount Route
 app.use('/api/v1/bootcamps', bootcampRoutes);
