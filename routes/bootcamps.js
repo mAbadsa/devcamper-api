@@ -11,13 +11,19 @@ const {
   bootcampPhotoUpload,
 } = require("../controllers/bootcamps");
 
+const BootCamp = require("../models/Bootcamp");
+const advancedResults = require("../middleware/advancedResults");
+
 // Include other resource router
 const courseRouter = require("./courses");
 
 // Re-route into other resource router
 router.use("/:bootcampId/courses", courseRouter);
 
-router.route("/").get(getBootcamps).post(createBootcamp);
+router
+  .route("/")
+  .get(advancedResults(BootCamp, "courses"), getBootcamps)
+  .post(createBootcamp);
 
 router
   .route("/:id")
