@@ -7,7 +7,7 @@ const BootCamp = require("../models/Bootcamp");
 // @desc        get all bootcamps
 // @route       GET /api/v1/bootcamps
 // @access      public
-getBootcamps = asyncHandler(async (req, res, next) => {
+const getBootcamps = asyncHandler(async (req, res, next) => {
   // let query;
 
   // // Copy req.query
@@ -78,7 +78,7 @@ getBootcamps = asyncHandler(async (req, res, next) => {
 // @desc        get specific bootcamps/:id
 // @route       GET /api/v1/bootcamps
 // @access      public
-getBootcamp = asyncHandler(async (req, res, next) => {
+const getBootcamp = asyncHandler(async (req, res, next) => {
   const bootcamp = await BootCamp.findById(req.params.id);
   if (!bootcamp) {
     return next(
@@ -95,7 +95,7 @@ getBootcamp = asyncHandler(async (req, res, next) => {
 // @desc        create a bootcamps
 // @route       POST /api/v1/bootcamps
 // @access      private
-createBootcamp = asyncHandler(async (req, res, next) => {
+const createBootcamp = asyncHandler(async (req, res, next) => {
   const bootcamp = await BootCamp.create(req.body);
   res.status(201).json({
     success: true,
@@ -107,7 +107,7 @@ createBootcamp = asyncHandler(async (req, res, next) => {
 // @desc        update specific bootcamps
 // @route       PUT /api/v1/bootcamps/:id
 // @access      private
-updateBootcamps = asyncHandler(async (req, res, next) => {
+const updateBootcamps = asyncHandler(async (req, res, next) => {
   const updatedBootcamp = await BootCamp.findByIdAndUpdate(
     req.params.id,
     req.body,
@@ -131,7 +131,7 @@ updateBootcamps = asyncHandler(async (req, res, next) => {
 // @desc        delete specific bootcamps
 // @route       DELETE /api/v1/bootcamps/:id
 // @access      private
-deleteBootcamps = asyncHandler(async (req, res, next) => {
+const deleteBootcamps = asyncHandler(async (req, res, next) => {
   const deletedBootcamp = await BootCamp.findById(req.params.id);
   if (!deletedBootcamp) {
     return next(
@@ -151,7 +151,7 @@ deleteBootcamps = asyncHandler(async (req, res, next) => {
 // @desc        Get bootcamps within a radius
 // @route       GET /api/v1/bootcamps/radius/:zipcode/:distance
 // @access      private
-getBootcampsInRadius = asyncHandler(async (req, res, next) => {
+const getBootcampsInRadius = asyncHandler(async (req, res, next) => {
   const { zipcode, distance, unit } = req.params;
 
   // Get lat/lng from geocoder
@@ -190,7 +190,7 @@ getBootcampsInRadius = asyncHandler(async (req, res, next) => {
 // @desc        Upload Photo
 // @route       PUT /api/v1/bootcamps/:id/photo
 // @access      private
-bootcampPhotoUpload = asyncHandler(async (req, res, next) => {
+const bootcampPhotoUpload = asyncHandler(async (req, res, next) => {
   const bootcamp = await BootCamp.findById(req.params.id);
 
   if (!bootcamp) {
