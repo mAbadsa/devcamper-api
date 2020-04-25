@@ -11,8 +11,11 @@ const register = asyncHandler(async (req, res, next) => {
 
   // await user.save();
 
+  const token = user.getSignedJwtToken();
+
   res.status(200).json({
     success: true,
+    token: token,
     data: user,
     errors: [],
   });
