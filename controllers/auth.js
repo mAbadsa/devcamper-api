@@ -37,6 +37,23 @@ const login = asyncHandler(async (req, res, next) => {
   sendTokenResponse(user, 200, res);
 });
 
+// @desc        Get logged in user
+// @route       POST /api/v1/auth/register
+// @access      private
+const getMe = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.user.id);
+  if(!user) {
+    if (!isMatch) {
+      return next(new ErrorResponse("Not authorized to access this route", 401));
+    }
+  }
+  res.status(200).json({
+    success: true,
+    data: user,
+    errors: []
+  })
+});
+
 // Get token from model, create cookie and send request
 const sendTokenResponse = (user, statusCode, res) => {
   const token = user.getSignedJwtToken();
@@ -54,7 +71,7 @@ const sendTokenResponse = (user, statusCode, res) => {
   res.status(statusCode).cookie("token", token, options).json({
     success: true,
     token,
-    data: [],
+    data: user,
     errors: [],
   });
 };
@@ -62,4 +79,5 @@ const sendTokenResponse = (user, statusCode, res) => {
 module.exports = {
   register,
   login,
+  getMe
 };
