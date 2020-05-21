@@ -9,15 +9,14 @@ const Bootcamp = require("../models/Bootcamp");
 // @route       GET /api/v1/bootcamps/:bootcampId/courses
 // @access      public
 getCourses = asyncHandler(async (req, res, next) => {
-
   if (req.params.bootcampId) {
     const courses = await Course.find({ bootcamp: req.params.bootcampId });
     return res.status(200).json({
       success: true,
       count: courses.length,
       data: courses,
-      errors: []
-    })
+      errors: [],
+    });
   } else {
     res.status(200).json(res.advancedResults);
   }
@@ -50,13 +49,27 @@ getCourse = asyncHandler(async (req, res, next) => {
 // @access      private
 addCourse = asyncHandler(async (req, res, next) => {
   req.body.bootcamp = req.params.bootcampId;
+  req.body.user = req.user.id;
 
   const bootcamp = await Bootcamp.findById(req.params.bootcampId);
 
-  if(!bootcamp) {
+  if (!bootcamp) {
     return next(
-      new ErrorResponse(`No bootcamp with the id of ${req.params.bootcampId}`, 404)
-    )
+      new ErrorResponse(
+        `No bootcamp with the id of ${req.params.bootcampId}`,
+        404
+      )
+    );
+  }
+
+  // Make sure user is bootcamp owner
+  if (bootcamp.user.toString() !== req.user.id && req.user.role !== "admin") {
+    return next(
+      new ErrorResponse(
+        `User with id ${req.user.id} is not authorized to add new Course to Bootcamp with id ${bootcamp._id}`,
+        401
+      )
+    );
   }
 
   const course = await Course.create(req.body);
@@ -74,21 +87,29 @@ addCourse = asyncHandler(async (req, res, next) => {
 updateCourse = asyncHandler(async (req, res, next) => {
   let updatedCourse = await Course.findById(req.params.id);
 
-
   if (!updatedCourse) {
     return next(
       new ErrorResponse(`Course not found with id of ${req.params.id}`)
     );
   }
 
-  updatedCourse = await Course.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    {
-      new: true,
-      runValidators: true,
-    }
-  );
+  // Make sure user is bootcamp owner
+  if (
+    updatedCourse.user.toString() !== req.user.id &&
+    req.user.role !== "admin"
+  ) {
+    return next(
+      new ErrorResponse(
+        `User with id ${req.user.id} is not authorized to update course with id ${updatedCourse._id}`,
+        401
+      )
+    );
+  }
+
+  updatedCourse = await Course.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
 
   res.status(200).json({
     success: true,
@@ -105,6 +126,19 @@ deleteCourse = asyncHandler(async (req, res, next) => {
   if (!deletedCourse) {
     return next(
       new ErrorResponse(`Course not found with id of ${req.params.id}`)
+    );
+  }
+
+  // Make sure user is bootcamp owner
+  if (
+    deletedCourse.user.toString() !== req.user.id &&
+    req.user.role !== "admin"
+  ) {
+    return next(
+      new ErrorResponse(
+        `User with id ${req.user.id} is not authorized to delete Course with id ${deletedCourse._id}`,
+        401
+      )
     );
   }
 
