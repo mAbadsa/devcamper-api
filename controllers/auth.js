@@ -37,21 +37,43 @@ const login = asyncHandler(async (req, res, next) => {
   sendTokenResponse(user, 200, res);
 });
 
-// @desc        Get logged in user
-// @route       POST /api/v1/auth/register
+// @desc        Get Me Profile
+// @route       GET /api/v1/auth/me
 // @access      private
 const getMe = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.user.id);
-  if(!user) {
+  if (!user) {
     if (!isMatch) {
-      return next(new ErrorResponse("Not authorized to access this route", 401));
+      return next(
+        new ErrorResponse("Not authorized to access this route", 401)
+      );
     }
   }
   res.status(200).json({
     success: true,
     data: user,
-    errors: []
-  })
+    errors: [],
+  });
+});
+
+// @desc        Forgot password
+// @route       POST /api/v1/auth/forgotpassword
+// @access      Public
+const forgetPassword = asyncHandler(async (req, res, next) => {
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) {
+    return next(new ErrorResponse("There is no user with that email", 404));
+  }
+
+  const resetToken = user.getResetPasswordToken();
+
+  await user.save({ validateBeforeSave: false });
+
+  res.status(200).json({
+    success: true,
+    data: user,
+    errors: [],
+  });
 });
 
 // Get token from model, create cookie and send request
@@ -61,10 +83,10 @@ const sendTokenResponse = (user, statusCode, res) => {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
     ),
-    httpOnly: true
+    httpOnly: true,
   };
 
-  if(process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === "production") {
     options.secure = true;
   }
 
@@ -79,5 +101,6 @@ const sendTokenResponse = (user, statusCode, res) => {
 module.exports = {
   register,
   login,
-  getMe
+  getMe,
+  forgetPassword,
 };
