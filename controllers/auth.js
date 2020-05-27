@@ -58,6 +58,26 @@ const getMe = asyncHandler(async (req, res, next) => {
   });
 });
 
+// @desc        Update user details
+// @route       PUT /api/v1/auth/updateuserdetails
+// @access      private
+const updateUserDetails = asyncHandler(async (req, res, next) => {
+  const fieldsToUpdate = {
+    name: req.body.name,
+    email: req.body.email,
+  };
+  const user = await User.findByIdAndUpdate(req.user.id, fieldsToUpdate, {
+    new: true,
+    runValidators: true,
+  });
+
+  res.status(200).json({
+    success: true,
+    data: user,
+    errors: [],
+  });
+});
+
 // @desc        Forgot password
 // @route       POST /api/v1/auth/forgotpassword
 // @access      Public
@@ -113,7 +133,7 @@ const forgetPassword = asyncHandler(async (req, res, next) => {
 });
 
 // @desc        Reset password
-// @route       GET /api/v1/auth/resetpassword/:resettoken
+// @route       PUT /api/v1/auth/resetpassword/:resettoken
 // @access      public
 const resetPassword = asyncHandler(async (req, res, next) => {
   const resetPasswordToken = crypto
@@ -168,4 +188,5 @@ module.exports = {
   getMe,
   forgetPassword,
   resetPassword,
+  updateUserDetails,
 };
