@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router({ mergeParams: true });
 
-const { getReviews } = require("../controllers/reviews");
+const { getReviews, getReview } = require("../controllers/reviews");
 
 const Reviews = require("../models/Review");
 
@@ -16,7 +16,7 @@ router
   );
 /*.post(protect, authorize('publisher', 'admin'), addCourse);
  */
-// router.route("/:bootcampId/courses").get(getCourses);
+router.route("/:reviewId").get(getReview);
 
 // router.route("/:id").get(getCourse).put(protect, authorize('publisher', 'admin'), updateCourse).delete(protect, authorize('publisher', 'admin'), deleteCourse);
 
