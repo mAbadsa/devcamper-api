@@ -31,8 +31,46 @@ const getReview = asyncHandler(async (req, res, next) => {
   });
 
   if (!review) {
-    return next(new ErrorResponse(`Can't found review with id ${req.params.reviewId}`, 404));
+    return next(
+      new ErrorResponse(
+        `Can't found review with id ${req.params.reviewId}`,
+        404
+      )
+    );
   }
+
+  res.status(200).json({
+    success: true,
+    data: review,
+    errors: [],
+  });
+});
+
+// @desc        Add review
+// @route       POST /api/v1/bootcamps/:bootcampId/reviews
+// @access      Private
+const addReview = asyncHandler(async (req, res, next) => {
+  req.body.bootcamp = req.params.bootcampId;
+  req.body.user = req.user.id;
+
+  const bootcamp = await Bootcamp.findById(req.params.bootcampId);
+
+  if (!bootcamp) {
+    return next(
+      new ErrorResponse(`No Bootcamp with id ${req.params.bootcampId}`, 404)
+    );
+  }
+
+  if (!bootcamp.user.toString() === req.user.id && req.user.role !== "admin") {
+    return next(
+      new ErrorResponse(
+        `User with id ${req.user.id} is not authorized to add new Review to Bootcamp with id ${bootcamp._id}`,
+        401
+      )
+    );
+  }
+
+  const review = await Review.create(req.body);
 
   res.status(200).json({
     success: true,
@@ -44,4 +82,5 @@ const getReview = asyncHandler(async (req, res, next) => {
 module.exports = {
   getReviews,
   getReview,
+  addReview,
 };
