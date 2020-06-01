@@ -10,11 +10,12 @@ const protect = asyncHandlre(async (req, res, next) => {
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
   ) {
+    // Set token from  Bearer token in header
     token = req.headers.authorization.split(" ")[1];
   }
-  // Another logic
+  // Set token from  cookie
   // else if (req.cookie.token) {
-  //     token = req.cookie.token;
+  //   token = req.cookie.token;
   // }
 
   // Make sure token exists
