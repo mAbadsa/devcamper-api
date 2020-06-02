@@ -9,6 +9,8 @@ const connectDB = require("./config/db");
 const logger = require("./middleware/logger");
 const errorHandle = require("./middleware/errors");
 const mongoSanitize = require("express-mongo-sanitize");
+const helmet = require("helmet");
+const xss = require("xss-clean");
 
 // Load env vars
 dotenv.config({ path: "./config/config.env" });
@@ -30,16 +32,22 @@ app.use(express.json());
 // Cookie parser
 app.use(cookieParser());
 
-app.use(logger);
+// app.use(logger);
 
 // Dev logging middleware
-// if(process.env.NODE_ENV === 'development') {
-//   app.use(morgan('dev'));
-// }
+if (process.env.NODE_ENV === "development") {
+  app.use(morgan("dev"));
+}
 
+// Prevent NoSQL injection sanitize
 app.use(fileUpload());
 
 app.use(mongoSanitize());
+
+app.use(xss());
+
+// Secure the apps by setting various HTTP headers by using helmet
+app.use(helmet());
 
 app.use(express.static(path.join(__dirname, "public")));
 
