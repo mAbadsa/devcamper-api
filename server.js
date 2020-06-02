@@ -11,6 +11,9 @@ const errorHandle = require("./middleware/errors");
 const mongoSanitize = require("express-mongo-sanitize");
 const helmet = require("helmet");
 const xss = require("xss-clean");
+const hpp = require("hpp");
+const rateLimit = require("express-rate-limit");
+const cors = require('cors')
 
 // Load env vars
 dotenv.config({ path: "./config/config.env" });
@@ -48,6 +51,18 @@ app.use(xss());
 
 // Secure the apps by setting various HTTP headers by using helmet
 app.use(helmet());
+
+const limiter = rateLimit({
+  windowMs: 10 * 60 * 1000, // 10 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+});
+
+//  apply to all requests
+app.use(limiter);
+
+app.use(hpp());
+
+app.use(cors());
 
 app.use(express.static(path.join(__dirname, "public")));
 
