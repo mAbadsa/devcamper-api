@@ -14,8 +14,8 @@ const protect = asyncHandlre(async (req, res, next) => {
     token = req.headers.authorization.split(" ")[1];
   }
   // Set token from  cookie
-  // else if (req.cookie.token) {
-  //   token = req.cookie.token;
+  // else if (req.cookies.token) {
+  //   token = req.cookies.token;
   // }
 
   // Make sure token exists

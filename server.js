@@ -8,6 +8,7 @@ const colors = require("colors");
 const connectDB = require("./config/db");
 const logger = require("./middleware/logger");
 const errorHandle = require("./middleware/errors");
+const mongoSanitize = require("express-mongo-sanitize");
 
 // Load env vars
 dotenv.config({ path: "./config/config.env" });
@@ -31,9 +32,16 @@ app.use(cookieParser());
 
 app.use(logger);
 
-app.use(express.static(path.join(__dirname, "public")));
+// Dev logging middleware
+// if(process.env.NODE_ENV === 'development') {
+//   app.use(morgan('dev'));
+// }
 
 app.use(fileUpload());
+
+app.use(mongoSanitize());
+
+app.use(express.static(path.join(__dirname, "public")));
 
 // Mount Route
 app.use("/api/v1/bootcamps", bootcampRoutes);
