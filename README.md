@@ -1,10 +1,11 @@
 # devcamper-api
-DevCamper Backend API
-RsetFull API Build on NodeJS and MongoDB
+DevCamper is a backend API to manage tech Bootcamp.
+RsetFull API Build on NodeJS and MongoDB.
 
 ## Technologies :computer:
 - Expressjs
 - MongoDB
+- Node.js v12
 
 ## Getting Started 📣
 **1. You can start by cloning the repository on your local machine by running:**
@@ -14,12 +15,28 @@ git clone https://github.com/mAbadsa/login-api.git
 cd login-api
 ```
 
-**2. Install all of the dependencies:**
+**2. Create config.env file:**
+```
+MONGODB_URI=<MONGODB_ATLAS_UIR>
+GEOCODER_PROVIDER=google
+GEOCODER_API_KEY=<GOOGLE_MAP_API>
+MAX_FILE_UPLOAD=20
+FILE_UPLOAD_PATH=<FILE_PATH>
+JWT_SECRET=<SECRET_KEY>
+JWT_EXPIRE=2d
+SMTP_HOST=<smtp.example.com>
+STMP_PORT=<587>
+STMP_EMAIL=<SENDER_EMAIL>
+FROM_NAME=<YOUR_NAME>
+STMP_PASSWORD=<PASSWORD>
+```
+
+**3. Install all of the dependencies:**
 
 ```sh
 npm i
 ```
-**3. Run app:**
+**4. Run app:**
 ```sh
 npm start
 ```
