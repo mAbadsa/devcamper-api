@@ -11,8 +11,8 @@ RsetFull API Build on NodeJS and MongoDB.
 **1. You can start by cloning the repository on your local machine by running:**
 
 ```sh
-git clone https://github.com/mAbadsa/login-api.git
-cd login-api
+git clone https://github.com/mAbadsa/devcamper-api.git
+cd devcamper-api
 ```
 
 **2. Create config.env file:**
