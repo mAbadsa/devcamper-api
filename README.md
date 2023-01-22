@@ -44,3 +44,10 @@ and you can run as developer by using nodemon by run this command
 ```sh
 nodemon run dev
 ```
+
+**5. Fake Data:**
+```sh
+node seeder.js [-i | -d]
+-i import data from _data/*
+-d delete lagacy data from the database
+```
